@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="ratName" type="id" />
+    <item name="ratAge" type="id" />
+    <item name="ratColor" type="id" />
+    <item name="saveBtn" type="id" />
+    <item name="updateBtn" type="id" />
+    <item name="deleteBtn" type="id" />
+    <item name="findBtn" type="id" />
+    <item name="recyclerView" type="id" />
+    <item name="main" type="id" />
+</resources>
