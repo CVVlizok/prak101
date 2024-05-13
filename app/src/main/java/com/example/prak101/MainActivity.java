@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -49,21 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
-        RoomDatabase.Callback myCallBack = new RoomDatabase.Callback() {
-            @Override
-            public void onCreate(@NonNull SupportSQLiteDatabase db) {
-                super.onCreate(db);
-            }
-
-            @Override
-            public void onOpen(@NonNull SupportSQLiteDatabase db) {
-                super.onOpen(db);
-            }
-        };
-
         ratDatabase = Room.databaseBuilder(getApplicationContext(), RatDatabase.class, "RatDB")
                 .fallbackToDestructiveMigration().build();
-        //.addCallback(myCallBack).build();
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,15 +60,17 @@ public class MainActivity extends AppCompatActivity {
 
                 Rat rat = new Rat(name, age, color);
                 addRatInBackground(rat);
+                saveUserName(name);
             }
         });
 
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String name = nameEdit.getText().toString(); // Оставляем как строку
-                int age = Integer.parseInt(ageEdit.getText().toString()); // Извлекаем возраст
-                updateRatNameInBackground(name, age); // Вызываем метод для обновления имени крысы
+                String name = nameEdit.getText().toString();
+                int age = Integer.parseInt(ageEdit.getText().toString());
+                updateRatNameInBackground(name, age);
+                updateUserName(name);
             }
         });
 
@@ -92,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String color = colorEdit.getText().toString();
                 deleteRatByColorInBackground(color);
+                deleteUserName();
             }
         });
 
@@ -100,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = nameEdit.getText().toString();
                 findRatByNameInBackground(name);
+                String savedName = getUserName();
+                nameEdit.setText(savedName);
             }
         });
     }
@@ -187,5 +178,30 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void saveUserName(String name) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userName", name);
+        editor.apply();
+        Toast.makeText(MainActivity.this, "Username saved", Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateUserName(String newName) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("userName", newName);
+        editor.apply();
+        Toast.makeText(MainActivity.this, "Username updated", Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteUserName() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("userName");
+        editor.apply();
+        Toast.makeText(MainActivity.this, "Username deleted", Toast.LENGTH_SHORT).show();
+    }
+
+    private String getUserName() {
+        return sharedPreferences.getString("userName", "");
     }
 }
